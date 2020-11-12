@@ -1,11 +1,11 @@
-from django.shortcuts import render
-
-# global variable to store tasks
-tasks = []
+from django.shortcuts import render, redirect
+from .models import Todo
 
 
 # this view renders some predefined tasks
 def index(request):
+    # Query the to-do table and get all the records
+    tasks = Todo.objects.all()
     context = {'tasks': tasks}
     return render(request, 'tasks/index.html', context)
 
@@ -16,13 +16,9 @@ def add(request):
     if request.method == 'POST':
         # get the entered task from the request
         task = request.POST.get('task')
-        # add to the list (which is a global variable we created)
-        tasks.append(task)
-        # render the index page with the updated list of tasks
-        return render(request, 'tasks/index.html', context={'tasks': tasks})
+        # add the task to the to-do table
+        Todo.objects.create(task=task)
+        # redirect to index page
+        return redirect('index')
     else:
         return render(request, 'tasks/add.html')
-
-
-
-
